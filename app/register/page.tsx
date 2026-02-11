@@ -4,20 +4,29 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { FaGoogle, FaMicrosoft, FaGithub } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { registerSchema, RegisterFormData } from "@/utils/validation";
 
 // import css
 import styles from "./page.module.css";
 
-export default function Login() {
-    // Form fields state
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+export default function Register() {
 
     // Other state variables
     const [showPassword, setShowPassword] = useState(false);
 
-    const submit = async () => {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm<RegisterFormData>({
+        resolver: zodResolver(registerSchema),
+        mode: "onBlur",
+    });
+
+    const submit = async (data: RegisterFormData) => {
         // const response = await fetch(`http://localhost:8080/api/register`, {
         //     method: "POST",
         //     headers: {
@@ -26,7 +35,7 @@ export default function Login() {
         //     body: JSON.stringify({ username, email, password }),
         // })
 
-        alert("Registration Successful! \nUsername: " + username + "\nEmail: " + email + "\nPassword: " + password);
+        alert("Registration Successful! \nUsername: " + data.username + "\nEmail: " + data.email + "\nPassword: " + data.password);
     }
 
     return (
@@ -44,42 +53,79 @@ export default function Login() {
                     REGISTER
                 </h1>
 
-                <input
-                    className={`w-full bg-black border border-border p-2 mb-4 outline-none focus:ring-1 focus:ring-foreground ${styles.input}`}
-                    placeholder="Username"
-                    onChange={(event) => setUsername(event.target.value)}
-                />
+                <form onSubmit={handleSubmit(submit)} noValidate>
 
-                <input
-                    className={`w-full bg-black border border-border p-2 mb-4 outline-none focus:ring-1 focus:ring-foreground ${styles.input}`}
-                    placeholder="Email"
-                    onChange={(event) => setEmail(event.target.value)}
-                />
-
-                <div className="relative mb-6">
+                    {/* USERNAME */}
                     <input
-                        type={showPassword ? "text" : "password"}
-                        className={`w-full bg-black border border-border p-2 pr-10 outline-none focus:ring-1 focus:ring-foreground ${styles.input}`}
-                        placeholder="Password"
-                        onChange={(event) => setPassword(event.target.value)}
+                        {...register("username")}
+                        className={`w-full bg-black border p-2 mb-1 outline-none
+            ${errors.username ? "border-red-500" : "border-border"}
+            focus:ring-1 focus:ring-foreground ${styles.input}`}
+                        placeholder="Username"
                     />
 
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground transition"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                </div>
+                    {errors.username && (
+                        <p className="text-red-500 text-xs mb-3">
+                            {errors.username.message}
+                        </p>
+                    )}
 
-                <button
-                    className={`w-full border border-foreground py-2 hover:bg-foreground hover:text-black transition ${styles.button}`}
-                    onClick={submit}
-                >
-                    REGISTER
-                </button>
+                    {/* EMAIL */}
+                    <input
+                        {...register("email")}
+                        className={`w-full bg-black border p-2 mb-1 outline-none
+            ${errors.email ? "border-red-500" : "border-border"}
+            focus:ring-1 focus:ring-foreground ${styles.input}`}
+                        placeholder="Email"
+                    />
+
+                    {errors.email && (
+                        <p className="text-red-500 text-xs mb-3">
+                            {errors.email.message}
+                        </p>
+                    )}
+
+                    {/* PASSWORD */}
+                    <div className="relative mb-1">
+
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            {...register("password")}
+                            className={`w-full bg-black border p-2 pr-10 outline-none
+              ${errors.password ? "border-red-500" : "border-border"}
+              focus:ring-1 focus:ring-foreground ${styles.input}`}
+                            placeholder="Password"
+                        />
+
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground transition"
+                        >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+
+                    </div>
+
+                    {errors.password && (
+                        <p className="text-red-500 text-xs mb-4">
+                            {errors.password.message}
+                        </p>
+                    )}
+
+                    {/* SUBMIT */}
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`w-full border border-foreground py-2 transition
+            hover:bg-foreground hover:text-black
+            disabled:opacity-50 disabled:cursor-not-allowed
+            ${styles.button}`}
+                    >
+                        {isSubmitting ? "CREATING ACCOUNT..." : "REGISTER"}
+                    </button>
+
+                </form>
 
                 <p className="mt-4 text-center text-sm text-foreground/70">
                     Already have an account?{" "}

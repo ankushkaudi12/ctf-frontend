@@ -5,28 +5,32 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { FaGoogle, FaMicrosoft, FaGithub } from "react-icons/fa";
 
-// import css
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { loginSchema, LoginFormData } from "@/utils/validation";
+
 import styles from "./page.module.css";
 
 export default function Login() {
-    // Form fields state
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
 
-    // Other state variables
     const [showPassword, setShowPassword] = useState(false);
 
-    const submit = async () => {
-        // const response = await fetch(`http://localhost:8080/api/login`, {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({ username, password }),
-        // })
+    const {
+        register: login,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
+        mode: "onBlur",
+    });
 
-        alert("Login Successful! \nUsername: " + username + "\nPassword: " + password);
-    }
+    const submit = async (data: LoginFormData) => {
+        alert(
+            "Username: " + data.username + "\n" +
+            "Password: " + data.password
+        );
+    };
 
     return (
         <div
@@ -43,36 +47,66 @@ export default function Login() {
                     LOGIN
                 </h1>
 
-                <input
-                    className={`w-full bg-black border border-border p-2 mb-4 outline-none focus:ring-1 focus:ring-foreground ${styles.input}`}
-                    placeholder="Username"
-                    onChange={(event) => setUsername(event.target.value)}
-                />
+                {/* FORM */}
+                <form onSubmit={handleSubmit(submit)} noValidate>
 
-                <div className="relative mb-6">
+                    {/* USERNAME */}
                     <input
-                        type={showPassword ? "text" : "password"}
-                        className={`w-full bg-black border border-border p-2 pr-10 outline-none focus:ring-1 focus:ring-foreground ${styles.input}`}
-                        placeholder="Password"
-                        onChange={(event) => setPassword(event.target.value)}
+                        {...login("username")}
+                        className={`w-full bg-black border p-2 mb-1 outline-none
+            ${errors.username ? "border-red-500" : "border-border"}
+            focus:ring-1 focus:ring-foreground ${styles.input}`}
+                        placeholder="Username"
                     />
 
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground transition"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                </div>
+                    {errors.username && (
+                        <p className="text-red-500 text-xs mb-3">
+                            {errors.username.message}
+                        </p>
+                    )}
 
-                <button
-                    className={`w-full border border-foreground py-2 hover:bg-foreground hover:text-black transition ${styles.button}`}
-                    onClick={submit}
-                >
-                    ACCESS
-                </button>
+                    {/* PASSWORD */}
+                    <div className="relative mb-1">
+
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            {...login("password")}
+                            className={`w-full bg-black border p-2 pr-10 outline-none
+              ${errors.password ? "border-red-500" : "border-border"}
+              focus:ring-1 focus:ring-foreground ${styles.input}`}
+                            placeholder="Password"
+                        />
+
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground transition"
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                        >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+
+                    </div>
+
+                    {errors.password && (
+                        <p className="text-red-500 text-xs mb-4">
+                            {errors.password.message}
+                        </p>
+                    )}
+
+                    {/* SUBMIT */}
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`w-full border border-foreground py-2 transition
+            hover:bg-foreground hover:text-black
+            disabled:opacity-50 disabled:cursor-not-allowed
+            ${styles.button}`}
+                    >
+                        {isSubmitting ? "AUTHENTICATING..." : "ACCESS"}
+                    </button>
+
+                </form>
 
                 <p className="mt-4 text-center text-sm text-foreground/70">
                     Don't have an account?{" "}
@@ -84,27 +118,30 @@ export default function Login() {
                     </Link>
                 </p>
 
+                {/* DIVIDER */}
                 <div className="flex items-center my-5">
                     <div className="flex-grow h-px bg-border"></div>
                     <span className="px-3 text-sm text-foreground/60">OR</span>
                     <div className="flex-grow h-px bg-border"></div>
                 </div>
 
+                {/* CONTINUE WITH */}
                 <div className="flex justify-center my-5">
                     <span className="text-sm text-foreground/60 tracking-widest">
                         Continue with
                     </span>
                 </div>
 
+                {/* SOCIAL */}
                 <div className="flex justify-center gap-6">
 
                     {/* Google */}
                     <button
-                        className="p-3 border border-border rounded-full 
-                   transition-all duration-200
-                   hover:bg-[#00ff41] hover:text-black
-                   hover:shadow-[0_0_10px_#00ff41]
-                   cursor-pointer"
+                        className="p-3 border border-border rounded-sm
+            transition-all duration-200
+            hover:bg-[#00ff41] hover:text-black
+            hover:shadow-[0_0_10px_#00ff41]
+            cursor-pointer"
                         onClick={() => alert("Continue with Google")}
                         aria-label="Continue with Google"
                     >
@@ -113,11 +150,11 @@ export default function Login() {
 
                     {/* Microsoft */}
                     <button
-                        className="p-3 border border-border rounded-full 
-                   transition-all duration-200
-                   hover:bg-[#00ff41] hover:text-black
-                   hover:shadow-[0_0_10px_#00ff41]
-                   cursor-pointer"
+                        className="p-3 border border-border rounded-sm
+            transition-all duration-200
+            hover:bg-[#00ff41] hover:text-black
+            hover:shadow-[0_0_10px_#00ff41]
+            cursor-pointer"
                         onClick={() => alert("Continue with Microsoft")}
                         aria-label="Continue with Microsoft"
                     >
@@ -126,11 +163,11 @@ export default function Login() {
 
                     {/* GitHub */}
                     <button
-                        className="p-3 border border-border rounded-full 
-                   transition-all duration-200
-                   hover:bg-[#00ff41] hover:text-black
-                   hover:shadow-[0_0_10px_#00ff41]
-                   cursor-pointer"
+                        className="p-3 border border-border rounded-sm
+            transition-all duration-200
+            hover:bg-[#00ff41] hover:text-black
+            hover:shadow-[0_0_10px_#00ff41]
+            cursor-pointer"
                         onClick={() => alert("Continue with GitHub")}
                         aria-label="Continue with GitHub"
                     >
@@ -138,6 +175,7 @@ export default function Login() {
                     </button>
 
                 </div>
+
             </div>
 
         </div>
