@@ -1,0 +1,66 @@
+/* Wrapper responsiveness */
+.wrapper {
+  width: 100%;
+  padding: 1rem;
+}
+
+/* Login box base */
+.box {
+  width: 24rem; /* 384px (same as w-96) */
+  max-width: 100%;
+  margin: auto;
+}
+
+.button {
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  cursor: pointer;
+  box-shadow: 0 0 8px #00ff41;
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .box {
+    width: 90%;
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .box {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .input {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .button {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 360px) {
+  .box {
+    padding: 0.8rem;
+  }
+
+  .title {
+    font-size: 1.1rem;
+  }
+}
