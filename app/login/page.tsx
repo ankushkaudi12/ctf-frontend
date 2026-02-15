@@ -8,13 +8,16 @@ import { FaGoogle, FaMicrosoft, FaGithub } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { loginSchema, LoginFormData } from "@/utils/validation";
+import { useToastr } from "@/utils/components/Toastr/toastr";
+
+import { loginSchema, LoginFormData } from "@/utils/Validation/validation";
 
 import styles from "./page.module.css";
 
 export default function Login() {
 
     const [showPassword, setShowPassword] = useState(false);
+    const { toast } = useToastr();
 
     const {
         register: login,
@@ -26,7 +29,7 @@ export default function Login() {
     });
 
     const submit = async (data: LoginFormData) => {
-        alert(
+        toast(
             "Username: " + data.username + "\n" +
             "Password: " + data.password
         );

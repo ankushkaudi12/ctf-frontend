@@ -7,7 +7,9 @@ import { FaGoogle, FaMicrosoft, FaGithub } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { registerSchema, RegisterFormData } from "@/utils/validation";
+import { registerSchema, RegisterFormData } from "@/utils/Validation/validation";
+
+import { useToastr } from "@/utils/components/Toastr/toastr";
 
 // import css
 import styles from "./page.module.css";
@@ -16,6 +18,7 @@ export default function Register() {
 
     // Other state variables
     const [showPassword, setShowPassword] = useState(false);
+    const { toast } = useToastr();
 
     const {
         register,
@@ -35,7 +38,7 @@ export default function Register() {
         //     body: JSON.stringify({ username, email, password }),
         // })
 
-        alert("Registration Successful! \nUsername: " + data.username + "\nEmail: " + data.email + "\nPassword: " + data.password);
+        toast("Registration Successful! \nUsername: " + data.username + "\nEmail: " + data.email + "\nPassword: " + data.password);
     }
 
     return (
